@@ -1,0 +1,448 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"><title>中文拼写检查任务方法初步简单总结 | DLKKILL's blog</title><meta name="author" content="dlkkill"><meta name="copyright" content="dlkkill"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="中文拼写检查任务方法初步简单总结 (V1)一、任务简述中文拼写检查主要关注与对字或词级别的错误的纠正（并不涉及语法上的错误），任务的初步目标是寻找到出现错误的位置，然后是对错误进行纠正。 同时，为了简化问题，很多测评往往只关注如下情况的任务  纠错目标多为音近字（多用于ASR结果的纠正）或者形近字（多用于OCR结果的纠正），不太考虑偶然情况的错误（但也会存在） 纠错前后语句长度不会发生变化（即不会">
+<meta property="og:type" content="article">
+<meta property="og:title" content="中文拼写检查任务方法初步简单总结">
+<meta property="og:url" content="http://example.com/blog/498304885.html">
+<meta property="og:site_name" content="DLKKILL&#39;s blog">
+<meta property="og:description" content="中文拼写检查任务方法初步简单总结 (V1)一、任务简述中文拼写检查主要关注与对字或词级别的错误的纠正（并不涉及语法上的错误），任务的初步目标是寻找到出现错误的位置，然后是对错误进行纠正。 同时，为了简化问题，很多测评往往只关注如下情况的任务  纠错目标多为音近字（多用于ASR结果的纠正）或者形近字（多用于OCR结果的纠正），不太考虑偶然情况的错误（但也会存在） 纠错前后语句长度不会发生变化（即不会">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png">
+<meta property="article:published_time" content="2023-04-06T10:07:05.000Z">
+<meta property="article:modified_time" content="2023-04-07T08:24:28.539Z">
+<meta property="article:author" content="dlkkill">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/blog/498304885.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="baidu-site-verification" content="8efb913cce25f3d336bf194522ab1c91"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8efb913cce25f3d336bf194522ab1c91";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查询的内容：${query}"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":100},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '天',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  }
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '中文拼写检查任务方法初步简单总结',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-04-07 16:24:28'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header"><nav id="nav"><span id="blog-info"><a href="/" title="DLKKILL's blog"><span class="site-name">DLKKILL's blog</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page group hide" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> 清单</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> 音樂</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> 照片</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 電影</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">中文拼写检查任务方法初步简单总结</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="fa-fw post-meta-icon far fa-calendar-alt"></i><span class="post-meta-label">发表于</span><time datetime="2023-04-06T10:07:05.000Z" title="发表于 2023-04-06 18:07:05">2023-04-06</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字数总计:</span><span class="word-count">2.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">阅读时长:</span><span>8分钟</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="中文拼写检查任务方法初步简单总结"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="中文拼写检查任务方法初步简单总结-V1"><a href="#中文拼写检查任务方法初步简单总结-V1" class="headerlink" title="中文拼写检查任务方法初步简单总结 (V1)"></a>中文拼写检查任务方法初步简单总结 (V1)</h1><h2 id="一、任务简述"><a href="#一、任务简述" class="headerlink" title="一、任务简述"></a>一、任务简述</h2><p>中文拼写检查主要关注与对字或词级别的错误的纠正（并不涉及语法上的错误），任务的初步目标是寻找到出现错误的位置，然后是对错误进行纠正。</p>
+<p>同时，为了简化问题，很多测评往往只关注如下情况的任务</p>
+<ul>
+<li>纠错目标多为音近字（多用于ASR结果的纠正）或者形近字（多用于OCR结果的纠正），不太考虑偶然情况的错误（但也会存在）</li>
+<li>纠错前后语句长度不会发生变化（即不会发生增删）</li>
+</ul>
+<p>举例：</p>
+<!-- ![img](https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230406214837237-972227706.png) -->
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230406214837237-972227706.png" alt="无法显示图片时显示的文字" style="zoom:0.9">
+    <br>		<!--换行-->
+    表一 拼写检查任务示例	<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>但是，如果考虑真实数据集，文本纠错任务可能会遇到以下困难：</p>
+<ul>
+<li>一句文本中可能出现多出错误（此时会出现使用错误的上下文应用在语言模型中就行纠错的情况，增大纠错的难度）</li>
+<li>常识性错误或命名实体性质的错误（比如“我打算暑假去金字塔旅游”—&gt;“我打算暑假去金字塔旅游”）或者如表一中第四条出现的情况，简单说就是正确的词用在了错误的地方。</li>
+<li>训练集很难包含所有的可能错误情况，而让模型去纠正没有见过的错误是很困难的</li>
+</ul>
+<h2 id="二、数据准备工作"><a href="#二、数据准备工作" class="headerlink" title="二、数据准备工作"></a>二、数据准备工作</h2><h3 id="1-目前的开源数据集"><a href="#1-目前的开源数据集" class="headerlink" title="1.目前的开源数据集"></a>1.目前的开源数据集</h3><p><em><strong>(1) SIGHAN 2013-2015数据集</strong></em></p>
+<p>该数据集的预料来源为中国台湾的留学生&#x2F;中小学生作文，修正语法、语义错误后得到源端文本，再经由人工 对错别字位置、纠正结果进行标注后获得目标端文本。初始数据集为繁体字，可以使用OpenCC等工具转换成简体字数据集（但转换过程中可能会较多的噪声）</p>
+<p>同时，该数据集同时开源了一份混淆集，给出了汉字的易混淆字。</p>
+<p><em><strong>(2) Wang 等人生成的一份伪数据</strong></em></p>
+<p>该数据集是由人民日报和开源的中文演讲数据集加入错误后生成的伪数据集。</p>
+<p><em><strong>(3) 测评开源数据集</strong></em></p>
+<ul>
+<li><p>本次测评开放的训练数据集（目前还未放出）</p>
+<p>  <a target="_blank" rel="noopener" href="https://github.com/Arvid-pku/NLPCC2023_Shared_Task8">https://github.com/Arvid-pku/NLPCC2023_Shared_Task8</a></p>
+<p>  已开放，多为新闻文本</p>
+</li>
+<li><p>CCL-2022测评任务给出的数据集YACLC-CSC（数据量很小）<br><br><br></p>
+</li>
+</ul>
+<p>数据集整合下载：<br>    <a target="_blank" rel="noopener" href="https://blog.csdn.net/zhaohongfei_358/article/details/127093838">https://blog.csdn.net/zhaohongfei_358/article/details/127093838</a></p>
+<p>提供了简体字版的SIGHAN数据集和Wang开源的伪数据集</p>
+<h3 id="2-进行数据增强工作"><a href="#2-进行数据增强工作" class="headerlink" title="2.进行数据增强工作"></a>2.进行数据增强工作</h3><p>（1）考虑字音相似生成数据</p>
+<p>根据文字的拼音，根据声母、韵母的相似度分别生成同声字符集、同韵字符集。再由得到的字符集，随机替换正确文本语录，得到训练用的语料库。</p>
+<p>（2）按一定规则根据混淆集随机替换正确语料（或者已有CSC任务语料）得到扩充数据集。（CCL-2022 rank1所使用方法）</p>
+<p>具体规则如下：</p>
+<ol start="0">
+<li>可使用维基百科数据集、微信语料库、新闻语料库等作为原始未标注数据集</li>
+<li>使用分词算法将原句子进行分词处理。</li>
+<li>使用序列标注模型对所有词语进行属性标注、</li>
+<li>对被序列标注模型所标注出的人名，地名类词语(如坸坸酒店，坸坸公司)进行不设错处理， 即不会被替换为错字。同样被过滤的还有非中文词和停用词。</li>
+<li>随机按比例抽取字词进行改动。如该词在混淆集中，15%不改动，15%概率随机改动，70%概率在混淆集中随机抽取改动。如该词不在混淆集中则不改动。</li>
+</ol>
+<h3 id="3-辅助数据集"><a href="#3-辅助数据集" class="headerlink" title="3.辅助数据集"></a>3.辅助数据集</h3><p>（1）谐音字混淆集</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/LiangsLi/ChineseHomophones">https://github.com/LiangsLi/ChineseHomophones</a></p>
+<p>（2）形近字混淆集</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/wdimmy/Automatic-Corpus-Generation/blob/master/corpus/confusion.txt">https://github.com/wdimmy/Automatic-Corpus-Generation/blob/master/corpus/confusion.txt</a></p>
+<p>（3）字音字形混淆数据集</p>
+<p><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/ACL2020SpellGCN/SpellGCN/master/data/gcn_graph.ty_xj/spellGraphs.txt">https://raw.githubusercontent.com/ACL2020SpellGCN/SpellGCN/master/data/gcn_graph.ty_xj/spellGraphs.txt</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/FDChongLi/TwoWaysToImproveCSC/tree/main/SoftmaskedBert/save">https://github.com/FDChongLi/TwoWaysToImproveCSC/tree/main/SoftmaskedBert/save</a></p>
+<p>（4）字音特征</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/whgaara/tensorflow-faspell/blob/master/data/char_meta.txt">https://github.com/whgaara/tensorflow-faspell/blob/master/data/char_meta.txt</a></p>
+<p><a href="https://link.csdn.net/?target=https://unicode.org/Public/UNIDATA/Unihan.zip">https://link.csdn.net/?target=https%3A%2F%2Funicode.org%2FPublic%2FUNIDATA%2FUnihan.zip</a></p>
+<p>（5）字形特征（拆字）</p>
+<p><a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt">https://raw.githubusercontent.com/cjkvi/cjkvi-ids/master/ids.txt</a></p>
+<p>注：github上还有其他的开源的混淆集等数据集，同时使用开源工具pypinyin可以得到字符的拼音序列。</p>
+<h2 id="三、输入输出与模型"><a href="#三、输入输出与模型" class="headerlink" title="三、输入输出与模型"></a>三、输入输出与模型</h2><h3 id="1-输入特征"><a href="#1-输入特征" class="headerlink" title="1.输入特征"></a>1.输入特征</h3><p>对于输入，多使用三方面的特征</p>
+<ul>
+<li>字符序列</li>
+<li>拼音特征</li>
+<li>字形特征</li>
+</ul>
+<h4 id="1-字符特征的编码"><a href="#1-字符特征的编码" class="headerlink" title="(1) 字符特征的编码"></a>(1) 字符特征的编码</h4><p>将字符序列转化为特征序列后，与其他特征融合，作为输入（一般使用词向量，也有使用编码器，如bert，编码成特征序列）</p>
+<h4 id="2-拼音特征的使用"><a href="#2-拼音特征的使用" class="headerlink" title="(2) 拼音特征的使用"></a>(2) 拼音特征的使用</h4><p>首先，要将拼音序列补齐或截断成相同长度的序列，然后再进行进一步处理</p>
+<ul>
+<li>使用卷积神经网络提取特征，方法如下图</li>
+</ul>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407085218865-1377330475.png" alt="无法显示图片时显示的文字" style="zoom:0.6">
+    <br>		<!--换行-->
+    <!--标题-->
+    </center>
+</div>
+<br>
+* 使用编码器编码特征
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407100215784-1669350069.png" alt="无法显示图片时显示的文字" style="zoom:0.6">
+    <br>		<!--换行-->
+    <!--标题-->
+    </center>
+</div>
+<br>
+#### (3) 字形特征的使用
+
+<ul>
+<li>使用卷积神经网络提取特征</li>
+</ul>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407100314024-266818179.png" alt="无法显示图片时显示的文字" style="zoom:0.6">
+    <br>		<!--换行-->
+    <!--标题-->
+    </center>
+</div>
+<br>
+
+<ul>
+<li><p>对拆字后对结果进行编码</p>
+<p>  基于treeLSTM模型结构，用字的IDS拆分结构作为treeLSTM的输入，学习字向量表示</p>
+</li>
+</ul>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407104723809-1109818543.png" alt="无法显示图片时显示的文字" style="zoom:0.5">
+    <br>		<!--换行-->
+    <!--标题-->
+    </center>
+</div>
+<br>
+
+
+
+<ul>
+<li><p>字形嵌入</p>
+<p>  受Glyce的启发，有人使用包含汉字的位图信息的字体文件，例如使用仿宋、行楷和楷书3种中文字体，并将每种字体实例化成大小为24*24的图像，将三种字体的信息通过嵌入层转化成一维表示，再通过全连接层得到字形嵌入。</p>
+</li>
+</ul>
+<h4 id="4-特征的融合"><a href="#4-特征的融合" class="headerlink" title="(4) 特征的融合"></a>(4) 特征的融合</h4><ul>
+<li><p>SpellGCN 提出使用图神经网络对字音和字形结构关系进行学习，并且将这种字音字形的向量融入到字的embedding中，在纠错分类的时候，纠错更倾向于预测为混淆集里的字。</p>
+<p><img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407105649139-1632220282.png" alt="img"></p>
+</li>
+<li><p>使用全连接层融合特征</p>
+</li>
+</ul>
+<!-- ![img](https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407111355129-24589655.png) -->
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407111355129-24589655.png" alt="无法显示图片时显示的文字" style="zoom:0.4">
+    <br>		<!--换行-->
+        <!--标题-->
+    </center>
+</div>
+<br>
+
+<ul>
+<li><p>基于错误概率的特征融合</p>
+<p>  其中pi是检错网络计算出的每个字的错误概率，ei为词嵌入特征，efi为语音和字形特征</p>
+</li>
+</ul>
+<!-- ![img](https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407111753798-583497888.png) -->
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407111753798-583497888.png" alt="无法显示图片时显示的文字" style="zoom:0.5">
+    <br>		<!--换行-->
+        <!--标题-->
+    </center>
+</div>
+<br>
+
+<h3 id="2-常用的模型"><a href="#2-常用的模型" class="headerlink" title="2.常用的模型"></a>2.常用的模型</h3><h4 id="1-编码器解码器结构"><a href="#1-编码器解码器结构" class="headerlink" title="(1) 编码器解码器结构"></a>(1) 编码器解码器结构</h4><div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407112447437-1400894155.png" alt="无法显示图片时显示的文字" style="zoom:0.3">
+    <br>		<!--换行-->
+        编码器解码器结构的文本纠错<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>如图所示，把文本拼写检查纠正任务当作文本翻译任务，编码器编码待纠错文本，解码器解码得到纠正后的文本。</p>
+<h4 id="2-基于bert的结构"><a href="#2-基于bert的结构" class="headerlink" title="(2) 基于bert的结构"></a>(2) 基于bert的结构</h4><p>由bert生成候选集，再经过过滤网络从后续集中挑选合适的纠正结果（比如：选bert生成概率前k个概率中，包含在混淆集中且最大的概率，若前k个中不存在有在混淆集中的，则不进行纠错）</p>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113242756-1419458491.png" alt="无法显示图片时显示的文字" style="zoom:0.3">
+    <br>		<!--换行-->
+        基于bert+置信度相似度解码<!--标题-->
+    </center>
+</div>
+<br>
+
+<h4 id="3-分为检错网络和纠错网络"><a href="#3-分为检错网络和纠错网络" class="headerlink" title="(3) 分为检错网络和纠错网络"></a>(3) 分为检错网络和纠错网络</h4><p>举例1:</p>
+<!-- ![img](https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113446060-1855604480.png) -->
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113446060-1855604480.png" alt="无法显示图片时显示的文字" style="zoom:0.3">
+    <br>		<!--换行-->
+        检错网络<!--标题-->
+    </center>
+</div>
+<br>
+
+<!-- ![img](https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113606025-1802017176.png) -->
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113606025-1802017176.png" alt="无法显示图片时显示的文字" style="zoom:0.4">
+    <br>		<!--换行-->
+        纠错网络<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>举例2:</p>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407113750868-349242122.png" alt="无法显示图片时显示的文字" style="zoom:0.3">
+    <br>		<!--换行-->
+        Soft-Mask BERT （字节跳动)<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>在错误检测部分，通过BiGRU模型对每个输入字符进行错误检测，得到每个输入字符的错误概率值参与计算soft-masked embedding作为纠错部分的输入向量，一定程度减少了bert模型的过纠问题，提高纠错准确率。</p>
+<h2 id="四、CCL-2022-前三方案"><a href="#四、CCL-2022-前三方案" class="headerlink" title="四、CCL-2022 前三方案"></a>四、CCL-2022 前三方案</h2><h3 id="1-rank1-方案"><a href="#1-rank1-方案" class="headerlink" title="1. rank1 方案"></a>1. rank1 方案</h3><p><img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407150433583-1944262366.png" alt="img"></p>
+<center> 整体流程图 </center>
+<br>
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407150934765-1994696061.png" alt="无法显示图片时显示的文字" style="zoom:0.3">
+    <br>		<!--换行-->
+        模型结构<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>主要使用了以下方法：</p>
+<p>（1）结合拼音特征和字符序列特征</p>
+<p>（2）基本使用base-bert模型</p>
+<p>（3）为了解决一句话中存在多处错误的问题，采用多轮纠错的方法，每次只纠正一个错误。</p>
+<p>（4）为了解决“用正确的字替换正确的字”的情况，通过计算修改前后的困惑度来减少误召回情况</p>
+<p>（5）为了解决命名实体的纠正问题，训练了一个基于bert+crf的序列标准模型</p>
+<p>（6）最后训练了一个严格的n-gram模型，来进行最后的纠正</p>
+<h3 id="2-rank2-方案"><a href="#2-rank2-方案" class="headerlink" title="2. rank2 方案"></a>2. rank2 方案</h3><p>（1）该方案主要尝试了ReaLiSe (Xu et al., 2021)、CRASpell (Liu et al., 2022)、Macbert4csc (Cui et al., 2020)、SpellGCN (Cheng et al., 2020)、ReaLiSe算法等多个模型，并对结果进行了融合。</p>
+<p>（2）融合方法：把各个模型的纠错结果加入候选集，通过计算每个候选词的得分，从而得到最优结果。通过调研，决定采用N-gram计算替换每个候选词后句子的困惑度得分来决定选择最终结果。分别训练了字级别的5-gram模型和词级别 的3-gram模型。在句子的困惑度的得分计算时，综合考虑字级别和词级别的得分，以此提高结 果的可信度。</p>
+<p>（2）将传统CSC任务的Detection阶段单独拆出来做一个简单的判断句子中每个位置 对错的二分类任务，以此来提高模型的检错性能，尽可能的把所有的错误位置都检查出来。 在纠错阶段我们结合N-gram计算困惑度进行纠错，同时设置了一些过滤规则，这样引入了 一些额外知识保证纠错阶段的可控性，也使得纠错阶段的性能得以提高</p>
+<h3 id="3-rank3-方案"><a href="#3-rank3-方案" class="headerlink" title="3. rank3 方案"></a>3. rank3 方案</h3><br>
+
+
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407154533986-527061261.png" alt="无法显示图片时显示的文字" style="zoom:0.4">
+    <br>		<!--换行-->
+        模型结构<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>(1) 在使用bert的同时，将预训练时mlm任务的全连接层参数也作为初始化参数</p>
+<p>(2) 使用多个模型，多个模型的词表保持一致，将全连接层输 出的概率进行平均</p>
+<p>(3) 设置规则，对非音近，形近的修改，更加严格。</p>
+<h2 id="四、baseline"><a href="#四、baseline" class="headerlink" title="四、baseline"></a>四、baseline</h2><p>在ccl-track1任务中，提供了一份基于base-bert实现的baseline,该代码直接是使用了预训练的bert模型，将编码结果经过全连接层并softmax后的输出作为概率，进行输出。</p>
+<p>项目结构：</p>
+<div>			<!--块级封装-->
+    <center>	<!--将图片和文字居中-->
+    <img src="https://img2023.cnblogs.com/blog/1203819/202304/1203819-20230407154818074-679524798.png" alt="无法显示图片时显示的文字" style="zoom:0.6">
+    <br>		<!--换行-->
+        项目结构<!--标题-->
+    </center>
+</div>
+<br>
+
+<p>其中,data_preprocess.py负责处理原始数据，train.py负责训练，decode.py负责预测。</p>
+<p><em><strong>todo-list:</strong></em></p>
+<p>目前nlpcc-task8已经开放了原始训练数据，但是原始数据无法直接用于该baseline。需要做一下两个工作：</p>
+<ul>
+<li>将训练数据拆解成src tgt两份文件，并标注id</li>
+<li>生成一份文件，内容为纠正错误的位置已经纠正前后的内容</li>
+</ul>
+<h2 id="五、相关链接"><a href="#五、相关链接" class="headerlink" title="五、相关链接"></a>五、相关链接</h2><ol>
+<li>nlpcc-task8 数据集<br><a target="_blank" rel="noopener" href="https://github.com/Arvid-pku/NLPCC2023_Shared_Task8">https://github.com/Arvid-pku/NLPCC2023_Shared_Task8</a></li>
+<li>文本纠错资源集<br><a target="_blank" rel="noopener" href="https://github.com/destwang/CTCResources#chinese-spelling-check-csc">https://github.com/destwang/CTCResources#chinese-spelling-check-csc</a></li>
+<li>CTC-2021比赛<br><a target="_blank" rel="noopener" href="https://github.com/destwang/CTC2021">https://github.com/destwang/CTC2021</a></li>
+<li>CCL-2022测评报告<br><a target="_blank" rel="noopener" href="https://blcuicall.org/CCL2022-CLTC/report/">https://blcuicall.org/CCL2022-CLTC/report/</a></li>
+<li>中文纠错（Chinese Spelling Correct） 最新技术方案总结<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/javastart/article/details/122511809">https://blog.csdn.net/javastart/article/details/122511809</a></li>
+<li>基于BERT和多特征融合嵌入的中文拼写检查<br><a target="_blank" rel="noopener" href="https://www.jsjkx.com/CN/10.11896/jsjkx.220100104">https://www.jsjkx.com/CN/10.11896/jsjkx.220100104</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">dlkkill</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/blog/498304885.html">http://example.com/blog/498304885.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">DLKKILL's blog</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/blog/352722672.html" title="基于神经网络的语言模型（简单模型）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">基于神经网络的语言模型（简单模型）</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">dlkkill</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">4</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">3</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">2</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/DLKKILL" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:330293721@qq.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%AD%E6%96%87%E6%8B%BC%E5%86%99%E6%A3%80%E6%9F%A5%E4%BB%BB%E5%8A%A1%E6%96%B9%E6%B3%95%E5%88%9D%E6%AD%A5%E7%AE%80%E5%8D%95%E6%80%BB%E7%BB%93-V1"><span class="toc-text">中文拼写检查任务方法初步简单总结 (V1)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E4%BB%BB%E5%8A%A1%E7%AE%80%E8%BF%B0"><span class="toc-text">一、任务简述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="toc-text">二、数据准备工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E7%9B%AE%E5%89%8D%E7%9A%84%E5%BC%80%E6%BA%90%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">1.目前的开源数据集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E8%BF%9B%E8%A1%8C%E6%95%B0%E6%8D%AE%E5%A2%9E%E5%BC%BA%E5%B7%A5%E4%BD%9C"><span class="toc-text">2.进行数据增强工作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E8%BE%85%E5%8A%A9%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="toc-text">3.辅助数据集</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA%E4%B8%8E%E6%A8%A1%E5%9E%8B"><span class="toc-text">三、输入输出与模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E8%BE%93%E5%85%A5%E7%89%B9%E5%BE%81"><span class="toc-text">1.输入特征</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%AD%97%E7%AC%A6%E7%89%B9%E5%BE%81%E7%9A%84%E7%BC%96%E7%A0%81"><span class="toc-text">(1) 字符特征的编码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E6%8B%BC%E9%9F%B3%E7%89%B9%E5%BE%81%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-text">(2) 拼音特征的使用</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E7%89%B9%E5%BE%81%E7%9A%84%E8%9E%8D%E5%90%88"><span class="toc-text">(4) 特征的融合</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%B8%B8%E7%94%A8%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="toc-text">2.常用的模型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E7%BC%96%E7%A0%81%E5%99%A8%E8%A7%A3%E7%A0%81%E5%99%A8%E7%BB%93%E6%9E%84"><span class="toc-text">(1) 编码器解码器结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%9F%BA%E4%BA%8Ebert%E7%9A%84%E7%BB%93%E6%9E%84"><span class="toc-text">(2) 基于bert的结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%88%86%E4%B8%BA%E6%A3%80%E9%94%99%E7%BD%91%E7%BB%9C%E5%92%8C%E7%BA%A0%E9%94%99%E7%BD%91%E7%BB%9C"><span class="toc-text">(3) 分为检错网络和纠错网络</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81CCL-2022-%E5%89%8D%E4%B8%89%E6%96%B9%E6%A1%88"><span class="toc-text">四、CCL-2022 前三方案</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-rank1-%E6%96%B9%E6%A1%88"><span class="toc-text">1. rank1 方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-rank2-%E6%96%B9%E6%A1%88"><span class="toc-text">2. rank2 方案</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-rank3-%E6%96%B9%E6%A1%88"><span class="toc-text">3. rank3 方案</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%9B%E3%80%81baseline"><span class="toc-text">四、baseline</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E7%9B%B8%E5%85%B3%E9%93%BE%E6%8E%A5"><span class="toc-text">五、相关链接</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/498304885.html" title="中文拼写检查任务方法初步简单总结">中文拼写检查任务方法初步简单总结</a><time datetime="2023-04-06T10:07:05.000Z" title="发表于 2023-04-06 18:07:05">2023-04-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/352722672.html" title="基于神经网络的语言模型（简单模型）">基于神经网络的语言模型（简单模型）</a><time datetime="2023-03-31T11:48:03.000Z" title="发表于 2023-03-31 19:48:03">2023-03-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/340717617.html" title="基于神经网络的简单文本分类（情感分类）总结">基于神经网络的简单文本分类（情感分类）总结</a><time datetime="2023-03-28T12:59:38.000Z" title="发表于 2023-03-28 20:59:38">2023-03-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/blog/1243066710.html" title="Hello World">Hello World</a><time datetime="2023-03-26T13:59:04.414Z" title="发表于 2023-03-26 21:59:04">2023-03-26</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2023 By dlkkill</div><div class="footer_custom_text">hi,welcome to my</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script defer="defer" id="ribbon" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-ribbon.min.js" size="150" alpha="0.6" zIndex="-1" mobile="true" data-click="false"></script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></body></html>
